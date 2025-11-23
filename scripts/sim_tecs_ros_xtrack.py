@@ -23,13 +23,13 @@ def wrap(x):
 # ## SIM
 alt = 7.0
 control_point = [
-    (-10, -5, alt),
+    (-20, 5, alt),
     (-30.0, -10, alt),
-    (-30, -40.0, alt),
+    (-30, -50.0, alt),
     (30.00, -30.0, alt),
     (30, 5.0, alt),
-    (10, 5, alt),
-    (-10, -5, alt),
+    (10, -5, alt),
+    (-20, 5, alt),
 ]  # Rectangle Circuit Full Facility, const altitude
 
 # Get coordinates for reference line
