@@ -435,7 +435,7 @@ class PIDPublisher(Node):
                 ## Calculating Desired Acceleration based on desired velocity
                 if self.prev_v is None:
                     self.prev_v = self.v_est
-                K_V = 1.0
+                K_V = 0.5 # Reduce gain to prevent aggressive accel commands
                 self.des_a = K_V * (
                     des_v - np.abs(self.v_est)
                 )  # Desired Acceleration from current velocity
