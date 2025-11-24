@@ -30,13 +30,13 @@ class XTrack_NAV_lookAhead:
         self.wpt_rad = 3.0  # allowable error from target waypoint (m)
 
         self.wpt_switching_distance = (
-            1.0  # Look ahead for x meters along track and jump to next waypoint
+            4.0  # Look ahead for x meters along track and jump to next waypoint
         )
         self.path_distance_buf = 5.0  # Cross-track distance buffer
 
         self.lookahead_time_s = 2.0  # seconds to look ahead along path
         self.lookahead_min_m = 2.0  # never look ahead less than this distance
-        self.lookahead_max_m = 20.0  # cap look-ahead to prevent cutting corners
+        self.lookahead_max_m = 10.0  # cap look-ahead to prevent cutting corners
 
     def get_desired_flight(
         self, next_wpt, current_pose, Vx_speed, Vy_speed, verbose=False
