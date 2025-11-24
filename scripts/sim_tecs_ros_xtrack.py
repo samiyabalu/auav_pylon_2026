@@ -367,7 +367,7 @@ class PIDPublisher(Node):
 
     def pub_sports_cub(self):
         self.last_WP_ind = np.shape(control_point)[0]  # determine last waypoint
-
+        self.get_logger().info("Current WP Index: %s" % (self.current_WP_ind))
         ######################################## FLIGHT MODE ####################################
         flight_mode_msg = String()
         if (self.z <= 1.0) and self.end_cruise == False:
