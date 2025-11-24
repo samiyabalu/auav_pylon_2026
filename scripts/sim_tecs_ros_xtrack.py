@@ -473,10 +473,10 @@ class PIDPublisher(Node):
                     along_track_err, v_array, verbose=False
                 )
 
-                self.get_logger().info(
-                    "Control Command: Aileron: %0.2f: Elevator: %0.2f; Throttle: %0.2f Rudder: %0.2f"
-                    % (self.aileron, self.elev, self.throttle, self.rudder)
-                )
+                # self.get_logger().info(
+                #     "Control Command: Aileron: %0.2f: Elevator: %0.2f; Throttle: %0.2f Rudder: %0.2f"
+                #     % (self.aileron, self.elev, self.throttle, self.rudder)
+                # )
 
         # Publish Reference Data for Analysis
         ref_val_msg = Float32MultiArray()
