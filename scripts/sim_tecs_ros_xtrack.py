@@ -350,7 +350,6 @@ class PIDPublisher(Node):
 
     def pub_sports_cub(self):
         self.last_WP_ind = np.shape(control_point)[0]  # determine last waypoint ()
-        self.get_logger().info("Current WP Index: %s" % (self.current_WP_ind))
         
         ######################################## FLIGHT MODE ####################################
         flight_mode_msg = String()
@@ -414,6 +413,7 @@ class PIDPublisher(Node):
                 control_point, 
                 base_speed=10.0
             )
+            self.get_logger().info("Current Cruise Speed: %0.2f m/s" % (self.wpt_planner.v_cruise))
             if self.current_WP_ind == self.last_WP_ind:  # End Cruise when we react the FINAL WP
                 self.current_WP_ind = 0  # go back to cruise altitude waypoint
                 self.end_cruise = False
@@ -433,7 +433,7 @@ class PIDPublisher(Node):
                         verbose=False,
                     )
                 )
-
+                self.get_logger().info("Current Desired Speed: %0.2f m/s" % (des_v))
                 ## Calculating Desired Acceleration based on desired velocity
                 if self.prev_v is None:
                     self.prev_v = self.v_est
