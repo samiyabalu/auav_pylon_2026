@@ -130,6 +130,8 @@ class XTrack_NAV_lookAhead:
         Accepts filtered positions (x,y,z)
         """
         # self.last_WP = len(waypoints) - 1# Last Waypoint index
+        
+        # Set next waypoint if not already set
         if self.next_wpt == None:
             self.next_wpt = waypoints[self.current_WP_ind]
 

@@ -23,30 +23,13 @@ def wrap(x):
 # ## SIM
 alt = 7.0
 control_point = [
-    # (-10, -5, alt),
-    # (-30.0, -10, alt),
-    # (-30, -40.0, alt),
-    # (30.00, -30.0, alt),
-    # (30, 5.0, alt),
-    # (10, 5, alt),
-    # (-10, -5, alt),
-
-    # (10,-5,alt),
-    # (-20,5,alt),
-    # (-20,-20,alt),
-    # (-25,-45,alt),
-    # (20,-25,alt),
-    # (35,0,alt),
-    # (10,-5,alt),
-
-    (-28.7, 12.1, alt),
+(-28.7, 12.1, alt),
 (-24.0, -28.0, alt),
 (-34.2, -53.7, alt),
 (26.6, -25.7, alt),
 (43.9, 6.6, alt),
 (11.9, -2.4, alt),
 (-28.7, 12.1, alt),
-
 ]  # Rectangle Circuit Full Facility, const altitude
 
 # Get coordinates for reference line
@@ -152,7 +135,7 @@ class PIDPublisher(Node):
         self.wpt_planner = XTrack_NAV_lookAhead(
             self.dt, control_point, self.current_WP_ind
         )
-        self.wpt_planner.path_distance_buf = 5.0  # 2.0
+        self.wpt_planner.path_distance_buf = 15.0  # 2.0
         self.wpt_planner.wpt_switching_distance = 1.0  # 4.0
         self.wpt_planner.v_cruise = 10.0  # 0.5
         self.flight_mode = "takeoff"
@@ -367,7 +350,9 @@ class PIDPublisher(Node):
 
     def pub_sports_cub(self):
         self.last_WP_ind = np.shape(control_point)[0]  # determine last waypoint
+        self.get_logger().info("Last WP Index: %s" % (self.last_WP_ind))
         self.get_logger().info("Current WP Index: %s" % (self.current_WP_ind))
+        
         ######################################## FLIGHT MODE ####################################
         flight_mode_msg = String()
         if (self.z <= 1.0) and self.end_cruise == False:
@@ -426,7 +411,7 @@ class PIDPublisher(Node):
 
         if self.flight_mode == "airborne":
 
-            if self.current_WP_ind == self.last_WP_ind:  # End Cruise
+            if self.current_WP_ind == self.last_WP_ind:  # End Cruise when we react the FINAL WP
                 self.current_WP_ind = 0  # go back to cruise altitude waypoint
                 self.end_cruise = False
                 self.wpt_planner = XTrack_NAV_lookAhead(
