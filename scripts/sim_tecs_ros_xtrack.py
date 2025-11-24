@@ -413,7 +413,6 @@ class PIDPublisher(Node):
                 control_point, 
                 base_speed=10.0
             )
-            self.get_logger().info("Current Cruise Speed: %0.2f m/s" % (self.wpt_planner.v_cruise))
             if self.current_WP_ind == self.last_WP_ind:  # End Cruise when we react the FINAL WP
                 self.current_WP_ind = 0  # go back to cruise altitude waypoint
                 self.end_cruise = False
@@ -433,7 +432,6 @@ class PIDPublisher(Node):
                         verbose=False,
                     )
                 )
-                self.get_logger().info("Current Desired Speed: %0.2f m/s" % (des_v))
                 ## Calculating Desired Acceleration based on desired velocity
                 if self.prev_v is None:
                     self.prev_v = self.v_est
@@ -592,9 +590,9 @@ class PIDPublisher(Node):
             -1.0, 1.0
         ))
         
-        self.get_logger().info("Corner Angle: %0.2f degrees" % (angle_deg))
         # Reduce speed for sharper turns
         angle_deg = np.degrees(angle)
+        self.get_logger().info("Corner Angle: %0.2f degrees" % (angle_deg))
         if angle_deg > 90:  # Sharp turn
             return base_speed * 0.5  # 50% speed
         elif angle_deg > 45:  # Medium turn
