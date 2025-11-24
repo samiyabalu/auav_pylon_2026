@@ -591,7 +591,8 @@ class PIDPublisher(Node):
             np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2) + 1e-6),
             -1.0, 1.0
         ))
-                    
+        
+        self.get_logger().info("Corner Angle: %0.2f degrees" % (angle_deg))
         # Reduce speed for sharper turns
         angle_deg = np.degrees(angle)
         if angle_deg > 90:  # Sharp turn
@@ -600,6 +601,8 @@ class PIDPublisher(Node):
             return base_speed * 0.7  # 70% speed
         else:
             return base_speed  # Full speed
+        
+
 
 
 def main(args=None):
