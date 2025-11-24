@@ -349,8 +349,7 @@ class PIDPublisher(Node):
         self.prev_speed = self.v_est
 
     def pub_sports_cub(self):
-        self.last_WP_ind = np.shape(control_point)[0]  # determine last waypoint
-        self.get_logger().info("Last WP Index: %s" % (self.last_WP_ind))
+        self.last_WP_ind = np.shape(control_point)[0]  # determine last waypoint ()
         self.get_logger().info("Current WP Index: %s" % (self.current_WP_ind))
         
         ######################################## FLIGHT MODE ####################################
@@ -410,7 +409,11 @@ class PIDPublisher(Node):
             # )
 
         if self.flight_mode == "airborne":
-
+            self.wpt_planner.v_cruise = self.calculate_corner_speed(
+                self.current_WP_ind, 
+                control_point, 
+                base_speed=10.0
+            )
             if self.current_WP_ind == self.last_WP_ind:  # End Cruise when we react the FINAL WP
                 self.current_WP_ind = 0  # go back to cruise altitude waypoint
                 self.end_cruise = False
@@ -568,6 +571,35 @@ class PIDPublisher(Node):
             pose.pose.orientation.z = np.sin(yaw / 2)
             msg_path.poses.append(pose)
         self.pub_path.publish(msg_path)
+        
+    def calculate_corner_speed(self, current_wp_ind, waypoints, base_speed=10.0):
+        """Slow down for sharp corners"""
+        if current_wp_ind == 0 or current_wp_ind >= len(waypoints) - 1:
+            return base_speed
+                    
+        # Get three consecutive waypoints
+        p0 = np.array(waypoints[current_wp_ind - 1][:2])  # previous
+        p1 = np.array(waypoints[current_wp_ind][:2])      # current
+        p2 = np.array(waypoints[current_wp_ind + 1][:2])  # next
+                    
+        # Calculate vectors
+        v1 = p1 - p0
+        v2 = p2 - p1
+                    
+        # Calculate turn angle
+        angle = np.arccos(np.clip(
+            np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2) + 1e-6),
+            -1.0, 1.0
+        ))
+                    
+        # Reduce speed for sharper turns
+        angle_deg = np.degrees(angle)
+        if angle_deg > 90:  # Sharp turn
+            return base_speed * 0.5  # 50% speed
+        elif angle_deg > 45:  # Medium turn
+            return base_speed * 0.7  # 70% speed
+        else:
+            return base_speed  # Full speed
 
 
 def main(args=None):
