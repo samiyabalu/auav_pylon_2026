@@ -23,13 +23,13 @@ def wrap(x):
 # ## SIM
 alt = 7.0
 control_point = [
-    (-10, -5, alt),
-    (-30.0, -10, alt),
-    (-30, -40.0, alt),
-    (30.00, -30.0, alt),
-    (30, 5.0, alt),
-    (10, 5, alt),
-    (-10, -5, alt),
+(-28.7, 12.1, alt),
+(-24.0, -28.0, alt),
+(-34.2, -53.7, alt),
+(26.6, -25.7, alt),
+(43.9, 6.6, alt),
+(11.9, -2.4, alt),
+(-28.7, 12.1, alt),
 ]  # Rectangle Circuit Full Facility, const altitude
 
 # Get coordinates for reference line
@@ -425,7 +425,7 @@ class PIDPublisher(Node):
                         self.y_est,
                         self.z_est,
                         v_array,
-                        verbose=False,
+                        verbose=True,
                     )
                 )
 
@@ -456,10 +456,10 @@ class PIDPublisher(Node):
                     along_track_err, v_array, verbose=False
                 )
 
-                self.get_logger().info(
-                    "Control Command: Aileron: %0.2f: Elevator: %0.2f; Throttle: %0.2f Rudder: %0.2f"
-                    % (self.aileron, self.elev, self.throttle, self.rudder)
-                )
+                # self.get_logger().info(
+                #     "Control Command: Aileron: %0.2f: Elevator: %0.2f; Throttle: %0.2f Rudder: %0.2f"
+                #     % (self.aileron, self.elev, self.throttle, self.rudder)
+                # )
 
         # Publish Reference Data for Analysis
         ref_val_msg = Float32MultiArray()
