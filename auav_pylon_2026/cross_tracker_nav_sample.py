@@ -46,7 +46,10 @@ class XTrack_NAV_lookAhead:
         if abs(self.cross_track_err) > 15:
             des_v = 3.0
         else: 
-            des_v = 10.0
+            if self.distance_next_WP < 10:
+                des_v = 5.0
+            else:
+                des_v = 10.0
         return des_v
     
     def get_desired_flight(
