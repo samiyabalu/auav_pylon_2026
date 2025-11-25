@@ -29,6 +29,7 @@ class XTrack_NAV_lookAhead:
         )
         self.v_cruise = 10.0  # cruise airspeed (scaled)
         self.wpt_rad = 3.0  # allowable error from target waypoint (m)
+        self.distance_to_next_WP = 0.0
 
         self.wpt_switching_distance = (
             1.0  # Look ahead for x meters along track and jump to next waypoint
@@ -40,9 +41,9 @@ class XTrack_NAV_lookAhead:
         self.lookahead_max_m = 20.0  # cap look-ahead to prevent cutting corners
 
     def get_desired_speed(self, next_wpt, current_pose):
-        distance_next_WP = math.dist(next_wpt, current_pose)
+        self.distance_next_WP = math.dist(next_wpt, current_pose)
         
-        if distance_next_WP < 10:
+        if self.distance_next_WP < 100:
             des_v = 5.0
         else: 
             des_v = self.v_cruise
@@ -167,7 +168,7 @@ class XTrack_NAV_lookAhead:
                    \nCross-Track Error : {cross_track_err:.2f}\
                    \nDesired Heading : {des_heading:0.2f}\
                    \nCurrent Waypoint Index: {self.current_WP_ind:0.0f}\
-                   "
+                   \nDistance to Next Waypoint: {self.distance_next_WP:.2f}"
             )
         return des_v, des_gamma, des_heading, along_track_err, cross_track_err
 
