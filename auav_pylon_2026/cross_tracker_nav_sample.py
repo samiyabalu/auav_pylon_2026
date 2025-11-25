@@ -126,7 +126,8 @@ class XTrack_NAV_lookAhead:
                     \nAlong-Track Error from w1: {along_track_err_w1:.2f}\
                     \nCross-Track Error : {cross_track_err:.2f}\
                     \nPath Tangential Angle (Gamma_p): {gamma_p:0.2f}\
-                    \nDesired Heading : {des_heading:0.2f}"
+                    \nDesired Heading : {des_heading:0.2f}\
+                    \nDesired Velocity : {des_v:0.2f}"
             )
 
         return des_v, des_gamma, des_heading, along_track_err_w1, cross_track_err
