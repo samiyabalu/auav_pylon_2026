@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 ######################
 # Waypoint Target Algorithm with cross-track flow field and Alongtrack switching modes
@@ -38,6 +39,16 @@ class XTrack_NAV_lookAhead:
         self.lookahead_min_m = 2.0  # never look ahead less than this distance
         self.lookahead_max_m = 20.0  # cap look-ahead to prevent cutting corners
 
+    def get_desired_speed(self, next_wpt, current_pose):
+        distance_next_WP = math.dist(next_wpt, current_pose)
+        
+        if distance_next_WP < 10:
+            des_v = 5.0
+        else: 
+            des_v = self.v_cruise
+        self.get_logger().info("Desired Speed: %0.2f" % des_v)
+        return des_v
+    
     def get_desired_flight(
         self, next_wpt, current_pose, Vx_speed, Vy_speed, verbose=False
     ):
@@ -48,7 +59,7 @@ class XTrack_NAV_lookAhead:
         horz_dist_err = np.sqrt(x_err**2 + y_err**2)  # Distance Error
 
         # Compute desired airspeed (velocity)
-        des_v = self.v_cruise  # fix desired velocity to be desired cruise speed
+        des_v = self.get_desired_speed(next_wpt, current_pose)  # fix desired velocity to be desired cruise speed
 
         # Compute desired flight path angle
         K_h = 3.0  # gain on hdot --> higher = steeper gamma
