@@ -17,8 +17,8 @@ class XTrack_NAV_lookAhead:
         ## CURRENT_WP index might need to be parsed from the class variable in "init" and cycle directly from ros script
         self.current_WP_ind = start_WP_ind  # Current Active Next Waypoint Index
         self.next_wpt = None  # Current Active Next Waypoint Coordinate
-        self.prev_wpt = (0, 0, 0)  # Previous Waypoint Coordinate
         self.last_WP = len(waypoints) - 1  # Last Waypoint Index
+        self.prev_wpt = waypoints[self.last_WP]  # Previous Waypoint Coordinate
         self.current_pose_est = [0, 0, 0]  # Filtered pose position
         self.waypoints_list = waypoints
 
@@ -153,8 +153,6 @@ class XTrack_NAV_lookAhead:
         self.next_wpt = waypoints[self.current_WP_ind]
         if self.current_WP_ind != 0:
             self.prev_wpt = waypoints[self.current_WP_ind - 1]
-        else: 
-            self.prev_wpt = waypoints[self.last_WP]
 
         vx, vy, _ = V_array
 
