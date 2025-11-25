@@ -46,7 +46,6 @@ class XTrack_NAV_lookAhead:
             des_v = 5.0
         else: 
             des_v = self.v_cruise
-        self.get_logger().info("Desired Speed: %0.2f" % des_v)
         return des_v
     
     def get_desired_flight(
