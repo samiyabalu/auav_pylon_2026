@@ -2,11 +2,12 @@ import numpy as np
 import math
 
 ######################
-# Waypoint Target Algorithm with cross-track flow field and Alongtrack switching modes
+# Waypoint Target Algorithm with Waypoint-Seeking (Pure Pursuit) Logic
 ######################
 
 
 def angle_rad_wrapper(angle):
+    """Wraps an angle (in radians) to the range [-pi, pi)."""
     return (angle + np.pi) % (2 * np.pi) - np.pi
 
 
@@ -18,16 +19,16 @@ class XTrack_NAV_lookAhead:
         self.current_WP_ind = start_WP_ind  # Current Active Next Waypoint Index
         self.next_wpt = None  # Current Active Next Waypoint Coordinate
         self.last_WP = len(waypoints) - 1  # Last Waypoint Index
-        self.prev_wpt = (0,0,0)  # Previous Waypoint Coordinate
+        self.prev_wpt = (0, 0, 0)  # Previous Waypoint Coordinate
         self.current_pose_est = [0, 0, 0]  # Filtered pose position
         self.waypoints_list = waypoints
 
         self.v_max_vert = 0.5  # maximum vertical velocity (positive up) m/s
-        self.v_max_horz = 0.65  # maximum horizontal velocity m/s
+        self.v_max_horz = 0.55  # maximum horizontal velocity m/s
         self.v_min_horz = (
             0.5  # minimum horizontal velocity m/s enforce to prevent stall
         )
-        self.v_cruise = 15.0  # cruise airspeed (scaled)
+        self.v_cruise = 10.0  # cruise airspeed (scaled)
         self.wpt_rad = 3.0  # allowable error from target waypoint (m)
         self.distance_to_next_WP = 0.0
         self.cross_track_err = 0.0
@@ -43,13 +44,13 @@ class XTrack_NAV_lookAhead:
 
     def get_desired_speed(self, next_wpt, current_pose):
         self.distance_next_WP = math.dist(next_wpt, current_pose)
-        # if abs(self.cross_track_err) > 15:
-        #     des_v = 3.0
-        # else: 
-        if self.distance_next_WP < 10:
-                des_v = 5.0
+        if abs(self.cross_track_err) > 15:
+            des_v = 3.0
         else:
-                des_v = 5 + .2*self.distance_next_WP
+            if self.distance_next_WP < 10:
+                des_v = 5.0
+            else:
+                des_v = 10.0
         return des_v
     
     def get_desired_flight(
@@ -59,58 +60,54 @@ class XTrack_NAV_lookAhead:
         y_err = next_wpt[1] - current_pose[1]
         z_err = next_wpt[2] - current_pose[2]
 
-        horz_dist_err = np.sqrt(x_err**2 + y_err**2)  # Distance Error
+        horz_dist_err = np.sqrt(x_err**2 + y_err**2)  # Horizontal Distance Error
 
         # Compute desired airspeed (velocity)
-        des_v = self.get_desired_speed(next_wpt, current_pose)  # fix desired velocity to be desired cruise speed
+        des_v = self.get_desired_speed(next_wpt, current_pose)
 
-        # Compute desired flight path angle
+        # Compute desired flight path angle (vertical tracking)
         K_h = 3.0  # gain on hdot --> higher = steeper gamma
         if horz_dist_err == 0:
             des_gamma = 0
         else:
-            des_gamma = (
-                K_h * z_err / horz_dist_err
-            )  # Alternatively, this can be calculated from vertical-track error
-            # des_gamma = np.arctan((K_h*z_err)/horz_dist_err) #Alternatively, this can be calculated from cross-track error
+            # Vertical angle based on altitude error over horizontal distance
+            des_gamma = (K_h * z_err) / horz_dist_err
 
-        # # Compute along-track and cross-track error
+        # --- MODIFIED WAYPOINT-SEEKING LOGIC ---
+        # Calculate the desired heading as the direct angle to the next waypoint
+        des_heading = np.arctan2(y_err, x_err)
+        des_heading = angle_rad_wrapper(des_heading)
+        # ---------------------------------------
+
+        # The rest of the code is kept to calculate cross-track error for waypoint switching/debugging
         V_vector = np.array([Vx_speed, Vy_speed])
         V_speed_horz = np.linalg.norm(V_vector)
         x_est, y_est, _ = self.current_pose_est
 
-        gamma_p = np.arctan2(
-            self.next_wpt[1] - self.prev_wpt[1], self.next_wpt[0] - self.prev_wpt[0]
-        )  # Path Tangential angle
-
-        xdot_t = V_speed_horz * np.cos(gamma_p)  # path-tracking velocity x
-        ydot_t = V_speed_horz * np.sin(gamma_p)  # path-tracking velocity y
-        x_t = xdot_t * self.dt
-        y_t = ydot_t * self.dt
-
+        # The path-following setup (path_angle, unit_along_path, etc.) is still needed
+        # to correctly calculate the cross-track error (which is still useful)
         path_vect = np.array(self.next_wpt) - np.array(
             self.prev_wpt
-        )  # Vector between two waypoints
-        path_len = np.linalg.norm(path_vect)  # Distance between the two waypoints
-        path_angle = np.arctan2(
-            self.next_wpt[1] - self.prev_wpt[1], self.next_wpt[0] - self.prev_wpt[0]
         )
-        unit_along_path = path_vect[:2] / path_len  # path unit vector
-        unit_normal = (
-            np.array([-path_vect[1], path_vect[0]]) / path_len
-        )  # unit normal to the path
+        path_len = np.linalg.norm(path_vect)
+        if path_len > 1e-3:
+            unit_along_path = path_vect[:2] / path_len
+            unit_normal = (
+                np.array([-path_vect[1], path_vect[0]]) / path_len
+            )
+            pose_vect = [x_est, y_est] - np.array(self.prev_wpt)[:2]
 
-        pose_vect = [x_est, y_est] - np.array(self.prev_wpt)[:2]
-
-        # Along-track and cross-track components
-        along_track_err_w0 = np.dot(pose_vect, unit_along_path)  # from prev_wpt
-        along_track_err_w1 = max(
-            0.0, path_len - np.clip(along_track_err_w0, 0.0, path_len)
-        )
-        self.cross_track_err = np.dot(pose_vect, unit_normal)  # signed
-
-        # Dynamic look-ahead (speed-based)
-        V_speed_horz = max(np.linalg.norm([Vx_speed, Vy_speed]), 1e-3)
+            along_track_err_w0 = np.dot(pose_vect, unit_along_path)
+            along_track_err_w1 = max(
+                0.0, path_len - np.clip(along_track_err_w0, 0.0, path_len)
+            )
+            self.cross_track_err = np.dot(pose_vect, unit_normal)
+        else:
+             # Handle zero-length path segment (first waypoint, or overlapping WPTs)
+            along_track_err_w1 = 0.0
+            self.cross_track_err = 0.0
+        
+        # Lookahead calculation is now unused for heading but is kept for switching threshold
         Ld_nom = np.clip(
             V_speed_horz * self.lookahead_time_s,
             self.lookahead_min_m,
@@ -118,19 +115,16 @@ class XTrack_NAV_lookAhead:
         )
         Ld_eff = min(Ld_nom, along_track_err_w1)
 
-        # Vector-field heading: tangent + lateral correction by cross-track
-        des_heading = path_angle + np.arctan2(-self.cross_track_err, Ld_eff)
-        des_heading = (des_heading + np.pi) % (2 * np.pi) - np.pi
-
         if verbose == True:
+            # Path-following variables are printed but not used for heading
+            path_angle = np.arctan2(path_vect[1], path_vect[0])
             print(
-                f"x_t : {x_t:.2f}\
-                    \ny_t : {y_t:.2f}\
-                    \nAlong-Track Error from w0: {along_track_err_w0:.2f}\
+                f"x_err : {x_err:.2f}\
+                    \ny_err : {y_err:.2f}\
                     \nAlong-Track Error from w1: {along_track_err_w1:.2f}\
                     \nCross-Track Error : {self.cross_track_err:.2f}\
-                    \nPath Tangential Angle (Gamma_p): {gamma_p:0.2f}\
-                    \nDesired Heading : {des_heading:0.2f}\
+                    \nPath Tangential Angle (NOT USED): {path_angle:0.2f}\
+                    \nDesired Heading (Direct to WPT): {des_heading:0.2f}\
                     \nDesired Velocity : {des_v:0.2f}"
             )
 
@@ -159,19 +153,19 @@ class XTrack_NAV_lookAhead:
         # Compute Desired Speed, Desired Heading, Desired Glide Path
         des_v, des_gamma, des_heading, along_track_err, self.cross_track_err = (
             self.get_desired_flight(
-                self.next_wpt, self.current_pose_est, vx, vy, verbose=False
+                self.next_wpt, self.current_pose_est, vx, vy, verbose=verbose
             )
         )
 
         if verbose == True:
             print(
                 f"Desired Velocity : {des_v:.2f}\
-                   \nDesired Flight Path Angle (Gamma) : {des_gamma:.2f}\
-                   \nAlong-Track Error : {along_track_err:.2f}\
-                   \nCross-Track Error : {self.cross_track_err:.2f}\
-                   \nDesired Heading : {des_heading:0.2f}\
-                   \nCurrent Waypoint Index: {self.current_WP_ind:0.0f}\
-                   \nDistance to Next Waypoint: {self.distance_next_WP:.2f}"
+                       \nDesired Flight Path Angle (Gamma) : {des_gamma:.2f}\
+                       \nAlong-Track Error : {along_track_err:.2f}\
+                       \nCross-Track Error : {self.cross_track_err:.2f}\
+                       \nDesired Heading : {des_heading:0.2f}\
+                       \nCurrent Waypoint Index: {self.current_WP_ind:0.0f}\
+                       \nDistance to Next Waypoint: {self.distance_next_WP:.2f}"
             )
         return des_v, des_gamma, des_heading, along_track_err, self.cross_track_err
 
@@ -190,7 +184,7 @@ class XTrack_NAV_lookAhead:
         # along_remaining is the distance to the next waypoint along the segment
         if along_track_err < threshold:
             self.current_WP_ind += 1
-            print(f"Waypoint reached, going to waypoint {self.current_WP_ind}...")
+            # print(f"Waypoint reached, going to waypoint {self.current_WP_ind}...")
 
         if verbose == True:
             print(f"ALong track Error : {along_track_err:.2f}")
