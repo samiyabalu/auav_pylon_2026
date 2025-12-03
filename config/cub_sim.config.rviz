@@ -12,7 +12,7 @@ Panels:
         - /Marker1/Topic1
         - /Path4/Topic1
       Splitter Ratio: 0.5
-    Tree Height: 312
+    Tree Height: 198
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -433,10 +433,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.0253992080688477
+      Pitch: 1.3703991174697876
       Target Frame: sim
       Value: Orbit (rviz)
-      Yaw: 5.765401840209961
+      Yaw: 5.3204026222229
     Saved: ~
 Window Geometry:
   Displays:

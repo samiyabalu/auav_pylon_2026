@@ -34,7 +34,7 @@ mass: 0.057 # kg
 
 # --- Lateral Roll Control in Stabilized Sim mode---
 k_chi: 1.20                # [1/s] maps heading error -> desired heading rate
-phi_lim_deg: 30.0         # bank limit
+phi_lim_deg: 40.0         # bank limit
 phi_dot_lim_deg_s: 90.0   # optional slew on bank [deg/s]
 chi_deadband_deg: 1.0     # heading error deadband to fix oscillations [deg]
 K_phi_p: 3.0              # aileron per rad (P on roll error)
