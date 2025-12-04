@@ -27,7 +27,6 @@ control_point = [
 (-21.0, -23.0, alt),
 (-17.0, -19.0, alt),
 (-22.0, -18.0, alt),
-
 ]
 
 # Get coordinates for reference line
