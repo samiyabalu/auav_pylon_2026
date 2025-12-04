@@ -23,13 +23,11 @@ def wrap(x):
 # ## SIM
 alt = 7.0
 control_point = [
-(-22.0, -17.5, alt),
-(-20.4, -25.5, alt),
-(20.5,-28.4, alt),
-(23.7,-15.1, alt),
-(10.5, -2.4, alt),
-(-8.4, -8, alt),
-(-22.0, -17.5, alt),
+(-22.0, -18.0, alt),
+(-21.0, -23.0, alt),
+(-17.0, -19.0, alt),
+(-22.0, -18.0, alt),
+
 ]
 
 # Get coordinates for reference line
