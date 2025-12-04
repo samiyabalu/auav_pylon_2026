@@ -33,7 +33,7 @@ class XTrack_NAV_lookAhead:
         self.cross_track_err = 0.0
 
         self.wpt_switching_distance = (
-            8.0  # Look ahead for x meters along track and jump to next waypoint
+            1.5  # Look ahead for x meters along track and jump to next waypoint
         )
         self.path_distance_buf = 5.0  # Cross-track distance buffer
 
