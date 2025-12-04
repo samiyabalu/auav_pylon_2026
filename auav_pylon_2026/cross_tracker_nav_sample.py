@@ -23,11 +23,11 @@ class XTrack_NAV_lookAhead:
         self.waypoints_list = waypoints
 
         self.v_max_vert = 0.5  # maximum vertical velocity (positive up) m/s
-        self.v_max_horz = 0.65  # maximum horizontal velocity m/s
+        self.v_max_horz = 0.75  # maximum horizontal velocity m/s
         self.v_min_horz = (
             0.5  # minimum horizontal velocity m/s enforce to prevent stall
         )
-        self.v_cruise = 15.0  # cruise airspeed (scaled)
+        self.v_cruise = 20.0  # cruise airspeed (scaled)
         self.wpt_rad = 3.0  # allowable error from target waypoint (m)
         self.distance_to_next_WP = 0.0
         self.cross_track_err = 0.0
@@ -47,9 +47,9 @@ class XTrack_NAV_lookAhead:
         #     des_v = 3.0
         # else: 
         if self.distance_next_WP < 10:
-                des_v = 6.0
+                des_v = 10.0
         else:
-                des_v = 5 + .25*self.distance_next_WP
+                des_v = 6 + .25*self.distance_next_WP
         return des_v
     
     def get_desired_flight(
