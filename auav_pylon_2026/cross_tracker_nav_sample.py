@@ -27,7 +27,7 @@ class XTrack_NAV_lookAhead:
         self.v_min_horz = (
             0.5  # minimum horizontal velocity m/s enforce to prevent stall
         )
-        self.v_cruise = 15.0  # cruise airspeed (scaled)
+        self.v_cruise = 20.0  # cruise airspeed (scaled)
         self.wpt_rad = 3.0  # allowable error from target waypoint (m)
         self.distance_to_next_WP = 0.0
         self.cross_track_err = 0.0
@@ -121,6 +121,8 @@ class XTrack_NAV_lookAhead:
         # Vector-field heading: tangent + lateral correction by cross-track
         des_heading = path_angle + np.arctan2(-self.cross_track_err, Ld_eff)
         des_heading = (des_heading + np.pi) % (2 * np.pi) - np.pi
+        des_heading = np.arctan2(y_err, x_err)
+        des_heading = angle_rad_wrapper(des_heading)
 
         if verbose == True:
             print(
