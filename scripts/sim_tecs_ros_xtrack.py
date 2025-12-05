@@ -21,15 +21,15 @@ def wrap(x):
 
 
 # ## SIM
-alt = 7.0
+alt = 10.0
 control_point = [
-(-15.0, -13.5, alt),
-(-20.4, -23.5, alt),
-(20.5,-28.4, alt),
-(25.7,-13.1, alt),
-(8.5, -2.4, alt),
+(-10.0, -8.5, alt),
+(-22.4, -21.5, alt),
+(20.5,-26.4, alt),
+(18.7,-13.1, alt),
+(12.5, -2.4, alt),
 # (-8.4, -8, alt),
-(-15.0, -13.5, alt),
+(-10.0, -8.5, alt),
 ]
 
 # Get coordinates for reference line
@@ -378,13 +378,13 @@ class PIDPublisher(Node):
             self.takeoff_time += self.dt
 
             # Throttle ramp with floor/ceiling
-            self.throttle = ca.fmin(1.0, ca.fmax(0.7, self.throttle + 2.0 * self.dt))
+            self.throttle = ca.fmin(1.0, ca.fmax(0.7, self.throttle + .5 * self.dt))
 
             self.rudder = 0.0  # No yaw during takeoff
             self.aileron = 0.0  # Wings-level during takeoff
 
             # Elevator schedule (taildragger hold-down, then smooth pitch-up)
-            v_to = 0.5  # takeoff speed threshold
+            v_to = 10  # takeoff speed threshold
             e_down = -0.02  # elevator up while accelerating (tail on ground)
             e_up = 0.15  # target pitch-up elevator
             e_rate = 0.40  # max elevator change per second

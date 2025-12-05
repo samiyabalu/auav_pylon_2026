@@ -38,8 +38,8 @@ class XTrack_NAV_lookAhead:
         self.path_distance_buf = 5.0  # Cross-track distance buffer
 
         self.lookahead_time_s = 2.0  # seconds to look ahead along path
-        self.lookahead_min_m = 2.0  # never look ahead less than this distance
-        self.lookahead_max_m = 10.0  # cap look-ahead to prevent cutting corners
+        self.lookahead_min_m = 2  # never look ahead less than this distance
+        self.lookahead_max_m = 15  # cap look-ahead to prevent cutting corners
 
     def get_desired_speed(self, next_wpt, current_pose):
         self.distance_next_WP = math.dist(next_wpt, current_pose)
@@ -47,9 +47,9 @@ class XTrack_NAV_lookAhead:
         #     des_v = 3.0
         # else: 
         if self.distance_next_WP < 10:
-                des_v = 6.0
+                des_v = 7.0
         else:
-                des_v = 5 + .25*self.distance_next_WP
+                des_v = 7 + .25*self.distance_next_WP
         return des_v
     
     def get_desired_flight(
@@ -119,23 +119,23 @@ class XTrack_NAV_lookAhead:
         Ld_eff = min(Ld_nom, along_track_err_w1)
 
         # Vector-field heading: tangent + lateral correction by cross-track
-        des_heading = path_angle + np.arctan2(-self.cross_track_err, Ld_eff)
-        des_heading = (des_heading + np.pi) % (2 * np.pi) - np.pi
+        # des_heading = path_angle + np.arctan2(-self.cross_track_err, Ld_eff)
+        # des_heading = (des_heading + np.pi) % (2 * np.pi) - np.pi
         des_heading = np.arctan2(y_err, x_err)
         des_heading = angle_rad_wrapper(des_heading)
 
         if verbose == True:
-            print(
-                f"x_t : {x_t:.2f}\
-                    \ny_t : {y_t:.2f}\
-                    \nAlong-Track Error from w0: {along_track_err_w0:.2f}\
-                    \nAlong-Track Error from w1: {along_track_err_w1:.2f}\
-                    \nCross-Track Error : {self.cross_track_err:.2f}\
-                    \nPath Tangential Angle (Gamma_p): {gamma_p:0.2f}\
-                    \nDesired Heading : {des_heading:0.2f}\
-                    \nDesired Velocity : {des_v:0.2f}"
-            )
-
+            # print(
+            #     f"x_t : {x_t:.2f}\
+            #         \ny_t : {y_t:.2f}\
+            #         \nAlong-Track Error from w0: {along_track_err_w0:.2f}\
+            #         \nAlong-Track Error from w1: {along_track_err_w1:.2f}\
+            #         \nCross-Track Error : {self.cross_track_err:.2f}\
+            #         \nPath Tangential Angle (Gamma_p): {gamma_p:0.2f}\
+            #         \nDesired Heading : {des_heading:0.2f}\
+            #         \nDesired Velocity : {des_v:0.2f}"
+            # )
+            print("")
         return des_v, des_gamma, des_heading, along_track_err_w1, self.cross_track_err
 
     def wp_tracker(self, waypoints, x_est, y_est, z_est, V_array, verbose=False):

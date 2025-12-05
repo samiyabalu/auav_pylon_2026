@@ -76,7 +76,7 @@ class TECSControl_cub:
         
         print(f"[TECSControl] Gains reloaded from: {gain_path}")
 
-    def compute_thrust_pitch(self, t, x, y, z, ref_data, vx_est, vy_est, vz_est, V_est, gamma_est, vdot_est):
+    def compute_thrust_pitch(self, t, x, y, z, ref_data, vx_est, vy_est, vz_est, V_est, gamma_est, vdot_est,roll_est):
         # ref data in function of time
         ref_airspeed = ref_data['des_v']
         ref_gamma = ref_data['des_gamma'] #Glide slope angle
@@ -85,7 +85,42 @@ class TECSControl_cub:
 
         r_V = float(ref_airspeed)  # desired body-frame speed
         r_gamma = float(ref_gamma) # desired flight path angle
+        # ----- CLAMP GAMMA BC IT KEPT STALLING SAJ
+        # # Assume V_safe_climb is a parameter (e.g., 10.0 m/s) and gamma_max is 10 deg (0.17 rad)
+        # V_safe_climb = 10
+        # # self.param.V_safe_climb  # Must be loaded from YAML
+        # gamma_max = np.deg2rad(20)
+        # # self.param.gamma_max_climb # e.g., np.deg2rad(10)
+
+        # # Calculate a dynamic limit based on speed
+        # speed_ratio = np.clip(V_est / V_safe_climb, 0.0, 1.0)
+        # gamma_limit = gamma_max * speed_ratio
+
+        # # Clamp the desired gamma (r_gamma is the input ref_gamma)
+        r_gamma_clamped = np.clip(r_gamma, -20, 20)
+
+        # Use r_gamma_clamped for all subsequent TECS calculations
+        r_gamma = r_gamma_clamped
+
+
+
+
+
         r_V_dot = float(ref_accel) # desired acceleration
+        print(
+                f"r_V : {r_V:.2f}\
+                    \r_gamma: {r_gamma:0.2f}"
+            )
+
+        ################## RANDOM CRAP I ADDED BC I THINK WE COULD GET FIGHTER JET TURNS LOL #############3
+        roll_angle = abs(roll_est)
+        roll_clamped = np.clip(roll_angle, 0,np.deg2rad(70)) # max angle what are we thinking guys ehehehe
+        load_factor = _safe_div(1, np.cos(roll_clamped),eps=0.01)
+
+        # T_comp = (n - 1) * Weight * K_load_ff_gain / (V * T/D ratio)
+        # self.param.K_load_ff --> i can define this in the yaml file later, but for now imma just write it here
+        
+        load_comp_thrust = (load_factor - 1.0) * self.weight * self.param.K_load_ff
 
 
         #######################################################
@@ -105,7 +140,7 @@ class TECSControl_cub:
         # thrust = self.param.trim_thrust +self.weight * (self.param.K_thrustp * (gamma_est + vdot_est / self.g) + self.param.K_thrusti * self.error_norm_Es_dot_integral)
         thrust_unsat = ( self.param.trim_thrust
                + self.weight * ( self.param.K_thrustp * (gamma_est + vdot_est / self.g)
-                                 + self.param.K_thrusti * self.error_norm_Es_dot_integral ) )
+                                 + self.param.K_thrusti * self.error_norm_Es_dot_integral ) + load_comp_thrust)
 
         thrust = float(np.clip(thrust_unsat, 0.0, self.thr_max))
 
@@ -167,11 +202,12 @@ class TECSControl_cub:
         p_est = actual_data['p_est']
         q_est = actual_data['q_est']
         r_est = actual_data['r_est']
+        roll_est = actual_data['roll_est']
 
         #-------------------Compute Reference Outer Loop and Heading------------------#
         #Get desired thrust and pitch (we can remove this if we want to fully separate the two functions during implementation)
         if ref_thrust == None or ref_pitch == None:
-            ref_thrust, ref_pitch = self.compute_thrust_pitch(t, x, y, z, ref_data, vx_est, vy_est, vz_est, V_est, gamma_est, vdot_est) #Outer loop TECS controller
+            ref_thrust, ref_pitch = self.compute_thrust_pitch(t, x, y, z, ref_data, vx_est, vy_est, vz_est, V_est, gamma_est, vdot_est, roll_est) #Outer loop TECS controller
  
         ref_heading = ref_data['des_heading']
         r_heading = float(ref_heading) #desired heading yaw rate
