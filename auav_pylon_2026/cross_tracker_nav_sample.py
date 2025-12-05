@@ -33,13 +33,13 @@ class XTrack_NAV_lookAhead:
         self.cross_track_err = 0.0
 
         self.wpt_switching_distance = (
-            8.0  # Look ahead for x meters along track and jump to next waypoint
+            4.0  # Look ahead for x meters along track and jump to next waypoint
         )
         self.path_distance_buf = 5.0  # Cross-track distance buffer
 
         self.lookahead_time_s = 2.0  # seconds to look ahead along path
         self.lookahead_min_m = 2  # never look ahead less than this distance
-        self.lookahead_max_m = 15  # cap look-ahead to prevent cutting corners
+        self.lookahead_max_m = 8  # cap look-ahead to prevent cutting corners
 
     def get_desired_speed(self, next_wpt, current_pose):
         self.distance_next_WP = math.dist(next_wpt, current_pose)
