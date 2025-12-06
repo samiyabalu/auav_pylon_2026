@@ -1,25 +1,25 @@
 # --- Longitduinal TECS Outer Loop ---
-K_thrustp: 0.01
-K_thrusti: 0.4215
-K_pitchp: 0.075
-K_pitchi: 0.216
+K_thrustp: 0.01 # 0.02
+K_thrusti: 0.4215 #4.5
+K_pitchp: 0.075 # increase
+K_pitchi: 0.216 # increase
 norm_Es_dot_integral_max: 7.5
 dist_term_integral_max: 7.5
-trim_thrust: 3.5
+trim_thrust: 3.5 # increase
 
 # --- Longitduinal TECS Inner Loop ---
-K_thtlp: 0.2
+K_thtlp: 0.2 # increase
 K_thtli: 0.01
-K_elevp: 0.107
+K_elevp: 0.107 # increase
 K_elevi: 0.2107
 
 K_q: 0.2 #0.01
 K_phi_elev : 2.5
-pitch_integral_max: 0.3
+pitch_integral_max: 0.3 # increased
 thrust_integral_max: 1.0
 r_integral_max: 0.4
-xtrack_integral_max: 1.0
-trim_thtl: 0.64
+xtrack_integral_max: .6
+trim_thtl: 1
 trim_elev: 0.2
 
 # --- Lateral Loop Gains Direct aileron---
@@ -39,7 +39,7 @@ mass: 0.057 # kg
 
 # --- Lateral Roll Control in Stabilized Sim mode---
 k_chi: 1.20                # [1/s] maps heading error -> desired heading rate
-phi_lim_deg: 45.0         # bank limit
+phi_lim_deg: 50.0         # bank limit
 phi_dot_lim_deg_s: 90.0   # optional slew on bank [deg/s]
 chi_deadband_deg: 1.0     # heading error deadband to fix oscillations [deg]
 K_phi_p: 3.0              # aileron per rad (P on roll error)

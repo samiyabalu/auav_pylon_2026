@@ -8,7 +8,7 @@ dist_term_integral_max: 5.0 # Reduced from 7.5
 trim_thrust: 3.0 # Increased from 2.5
 
 # --- Longitduinal TECS Inner Loop ---
-K_thtlp: 0.3
+K_thtlp: 0.3 # increased
 K_thtli: 0.01
 K_elevp: 0.50 # Increased from 0.37
 K_elevi: 0.27
@@ -22,8 +22,8 @@ K_phi_elev : 2.5
 pitch_integral_max: 0.3
 thrust_integral_max: 1.5
 r_integral_max: 0.4
-xtrack_integral_max: .6
-trim_thtl: 1
+xtrack_integral_max: .6 # reduced
+trim_thtl: 1 # increased
 trim_elev: 0.2 #0.25
 
 # --- Lateral Loop Gains Direct aileron---
