@@ -1,7 +1,7 @@
 # --- Longitduinal TECS Outer Loop ---
 K_thrustp: 0.2
 K_thrusti: 0.40 # Increased from 0.303
-K_pitchp: 0.5
+K_pitchp: 0.6
 K_pitchi: 0.45 # Increased from 0.316
 norm_Es_dot_integral_max: 7.5
 dist_term_integral_max: 5.0 # Reduced from 7.5
@@ -48,4 +48,4 @@ i_phi_max: 0.63            # integral clamp (aileron units)
 da_max: 1.0     
 
 # ----- Other Params that I added ----- 
-K_load_ff: .6
+K_load_ff: .45
