@@ -23,15 +23,18 @@ def wrap(x):
 # ## SIM
 alt = 4.0
 control_point = [
-(-3.40,2.66,alt),
-(-6.37,-4.67,alt),
-(-3.28,-11.58,alt),
-(4.13,-10.35,alt),
-(8.90,-3.76,alt),
-(11.41,3.79,alt),
-(8.36,10.58,alt),
-(0.95,8.79,alt),
-(-3.40,2.66,alt),
+# (-2.58,-4.83,alt),
+# (-8.29,-3.09,alt),
+# (-9.75,1.67,alt),
+# (-4.35,4.10,alt),
+# (21.09,0.31,alt),
+# (17.29,-3.64,alt),
+# (-2.58,-4.83,alt),
+    (-2.00,-4.00,alt),
+(-2.00,4.00,alt),
+(10.00,4.00,alt),
+(10.00,-4.00,alt),
+    (-2.00,-4.00,alt),
 ]
 
 # Get coordinates for reference line
@@ -380,7 +383,7 @@ class PIDPublisher(Node):
             self.takeoff_time += self.dt
 
             # Throttle ramp with floor/ceiling
-            self.throttle = ca.fmin(1.0, ca.fmax(0.7, self.throttle + .5 * self.dt))
+            self.throttle = ca.fmin(1.0, ca.fmax(0.7, self.throttle + .3 * self.dt))
 
             self.rudder = 0.0  # No yaw during takeoff
             self.aileron = 0.0  # Wings-level during takeoff

@@ -23,23 +23,23 @@ class XTrack_NAV_lookAhead:
         self.waypoints_list = waypoints
 
         self.v_max_vert = 0.5  # maximum vertical velocity (positive up) m/s
-        self.v_max_horz = 0.65  # maximum horizontal velocity m/s
+        self.v_max_horz = 0.55  # maximum horizontal velocity m/s
         self.v_min_horz = (
             0.5  # minimum horizontal velocity m/s enforce to prevent stall
         )
-        self.v_cruise = 20.0  # cruise airspeed (scaled)
+        self.v_cruise = 15.0  # cruise airspeed (scaled)
         self.wpt_rad = 3.0  # allowable error from target waypoint (m)
         self.distance_to_next_WP = 0.0
         self.cross_track_err = 0.0
 
         self.wpt_switching_distance = (
-            4.0  # Look ahead for x meters along track and jump to next waypoint
+            3  # Look ahead for x meters along track and jump to next waypoint
         )
         self.path_distance_buf = 5.0  # Cross-track distance buffer
 
         self.lookahead_time_s = 1.0  # seconds to look ahead along path
-        self.lookahead_min_m = 2  # never look ahead less than this distance
-        self.lookahead_max_m = 4  # cap look-ahead to prevent cutting corners
+        self.lookahead_min_m = 1.75  # never look ahead less than this distance
+        self.lookahead_max_m = 1.75  # cap look-ahead to prevent cutting corners
 
     def get_desired_speed(self, next_wpt, current_pose):
         self.distance_next_WP = math.dist(next_wpt, current_pose)
@@ -47,11 +47,11 @@ class XTrack_NAV_lookAhead:
         #     des_v = 3.0
         # else: 
         # if self.distance_next_WP < 10:
-        #         des_v = 7.0
+        #         des_v = 6.0
         # else:
-        #         des_v = 7 + .25*self.distance_next_WP
+        #         des_v = 10 + .25*self.distance_next_WP
         # return des_v
-        return 15
+        return 14
     
     def get_desired_flight(
         self, next_wpt, current_pose, Vx_speed, Vy_speed, verbose=False
