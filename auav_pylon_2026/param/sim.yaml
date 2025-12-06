@@ -2,7 +2,7 @@
 K_thrustp: 0.2
 K_thrusti: 0.40 # Increased from 0.303
 K_pitchp: 0.6
-K_pitchi: 0.45 # Increased from 0.316
+K_pitchi: 0.316 # Increased from 0.316
 norm_Es_dot_integral_max: 7.5
 dist_term_integral_max: 5.0 # Reduced from 7.5
 trim_thrust: 3.0 # Increased from 2.5
